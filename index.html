@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Jaan, Be My Valentine? 💕</title>
+    <title>Be My Valentine? 💕</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -196,8 +196,12 @@
             background: white;
             color: var(--deep-rose);
             border: 3px solid var(--rose);
-            position: absolute;
+            position: relative;
             transition: all 0.15s ease-out;
+        }
+        
+        .no-btn.moving {
+            position: absolute;
         }
 
         .no-btn:hover {
@@ -318,8 +322,8 @@
     <div class="container">
         <div id="question">
             <div class="emoji">💝</div>
-            <h1>Will You Be My Valentine, Jaan?</h1>
-            <p class="subtitle">Jaan you make my heart skip a beat every single day. You are my valentine for the rest of my life and other lifetimes.</p>
+            <h1>Will You Be My Valentine?</h1>
+            <p class="subtitle">You make my heart skip a beat every single day. I can't imagine this Valentine's Day without you by my side.</p>
             
             <div class="buttons">
                 <button class="yes-btn" onclick="sayYes()">
@@ -333,7 +337,7 @@
 
         <div class="success" id="success">
             <div class="emoji">🎉</div>
-            <h2>Yaaaay! You Said Yes, Jaan!</h2>
+            <h2>Yay! You Said Yes!</h2>
             <p>You just made me the happiest person alive! Can't wait to spend this Valentine's Day with you! 💕✨</p>
         </div>
     </div>
@@ -365,12 +369,34 @@
         const noBtn = document.getElementById('noBtn');
         let noBtnClickCount = 0;
         let lastMoveTime = 0;
+        let isFirstMove = true;
 
         function moveNoButton() {
             // Prevent too frequent moves
             const now = Date.now();
             if (now - lastMoveTime < 100) return;
             lastMoveTime = now;
+
+            // On first move, change to absolute positioning
+            if (isFirstMove) {
+                const btnRect = noBtn.getBoundingClientRect();
+                const containerRect = noBtn.parentElement.getBoundingClientRect();
+                
+                // Calculate current position relative to container
+                const currentLeft = btnRect.left - containerRect.left;
+                const currentTop = btnRect.top - containerRect.top;
+                
+                // Add moving class and set initial position
+                noBtn.classList.add('moving');
+                noBtn.style.left = currentLeft + 'px';
+                noBtn.style.top = currentTop + 'px';
+                
+                isFirstMove = false;
+                
+                // Wait a tiny bit before actually moving
+                setTimeout(() => moveNoButton(), 50);
+                return;
+            }
 
             const container = noBtn.parentElement;
             const containerRect = container.getBoundingClientRect();
@@ -385,9 +411,9 @@
             let newX = Math.random() * maxX + padding;
             let newY = Math.random() * maxY + padding;
             
-            // Make sure it's not too close to the current position
-            const currentX = parseFloat(noBtn.style.left) || containerRect.width / 2 - btnRect.width / 2;
-            const currentY = parseFloat(noBtn.style.top) || containerRect.height / 2 - btnRect.height / 2;
+            // Get current position
+            const currentX = parseFloat(noBtn.style.left) || 0;
+            const currentY = parseFloat(noBtn.style.top) || 0;
             
             const distance = Math.sqrt(Math.pow(newX - currentX, 2) + Math.pow(newY - currentY, 2));
             
